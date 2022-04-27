@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  web:
+    container_name: api_container
+    build: .
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 5000 --reload'
+    volumes:
+      - .:/code
+    expose:
+      - 5000
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://fastapi_traefik:fastapi_traefik@db:5432/fastapi_traefik
+    depends_on:
+      - db
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.fastapi_router.rule=Host(`14.225.255.105`)"
+
+    # Dùng để cắt prefix trong request
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fastapi_router.rule=(Host(`14.225.255.105`) && PathPrefix(`/api/v1`))"
+      - "traefik.http.middlewares.fastapi_middlewares.stripprefix.prefixes=/api/v1"
+      - "traefik.http.middlewares.fastapi_middlewares.stripprefix.forceSlash=false"
+      - "traefik.http.routers.fastapi_router.middlewares=fastapi_middlewares"
+
+  db:
+    container_name: db_container
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=fastapi_traefik
+      - POSTGRES_PASSWORD=fastapi_traefik
+      - POSTGRES_DB=fastapi_traefik
+
+  traefik:
+    container_name: reverse_proxy_container
+    image: traefik:v2.2
+    ports:
+      - 80:80
+    volumes:
+      - ./traefik.dev.toml:/etc/traefik/traefik.toml
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - 8000:80
+
+volumes:
+  postgres_data:
