@@ -1,37 +1,56 @@
-from fastapi import Depends, FastAPI
-from sqlalchemy.future import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Depends, FastAPI, status, Body, HTTPException
 
 from app.db import get_session, init_db
-from app.models import Song, SongCreate
-
+import app.crud as crud
+from app.models import Target, Category, Group
 from typing import List
-from datetime import datetime
+from sqlmodel import Session
 
-app = FastAPI(root_path='/api/v1')
+app = FastAPI(root_path='/api')
 
 
 @app.on_event("startup")
 async def on_startup():
-    await init_db()
+    init_db()
 
 
-@app.get("/ping")
-async def pong():
-    return {"pong": datetime.now()}
+@app.get("/ping", status_code=status.HTTP_200_OK)
+def pong():
+    return "pong"
 
 
-@app.get("/songs", response_model=List[Song])
-async def get_songs(session: AsyncSession = Depends(get_session)):
-    result = await session.execute(select(Song))
-    songs = result.scalars().all()
-    return [Song(name=song.name, artist=song.artist, id=song.id) for song in songs]
+
+@app.get('/targets', status_code=status.HTTP_200_OK, response_model=List[Target] ,description="add targets")
+def getTargets(status: int,
+                session: Session = Depends(get_session)):
+    try:
+        return crud.getTargets(status, session)
+    except Exception as e:
+        raise HTTPException(status_code=403)
 
 
-@app.post("/songs")
-async def add_song(song: SongCreate, session: AsyncSession = Depends(get_session)):
-    song = Song(name=song.name, artist=song.artist)
-    session.add(song)
-    await session.commit()
-    await session.refresh(song)
-    return song
+@app.post('/targets', status_code=status.HTTP_200_OK, description="add targets")
+def addTargets(target_list: List[Target],
+                session: Session = Depends(get_session)):
+    try:
+        crud.addTargets(target_list, session)
+    except Exception as e:
+        raise HTTPException(status_code=403)
+
+
+@app.post('/group', status_code=status.HTTP_200_OK, description="create new group")
+def addGroup(group_name: str = Body(..., embed=True),
+            session: Session = Depends(get_session)):
+    try:
+        crud.addGroup(group_name, session)
+    except Exception as e:
+        raise HTTPException(status_code=403)
+
+
+@app.post('/category', status_code=status.HTTP_200_OK, description="create new category")
+def addCategory(cat_name: str = Body(..., embed=True),
+            session: Session = Depends(get_session)):
+    try:
+        crud.addCategory(cat_name, session)
+    except Exception as e:
+        raise HTTPException(status_code=403)
