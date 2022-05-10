@@ -1,12 +1,21 @@
 version: '3.8'
 
 services:
-  web:
-    container_name: api_container
-    build: .
+  frontend:
+    container_name: frontend_container
+    build: ./frontend 
+    command: npm run build
+    volumes:
+      - ./frontend/app:/code
+    ports:
+      - 8000:8000
+
+  backend:
+    container_name: backend_container
+    build: ./backend
     command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 5000 --reload'
     volumes:
-      - .:/code
+      - ./backend/app:/code/app
     expose:
       - 5000
     environment:
@@ -53,7 +62,7 @@ services:
       - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
     ports:
-      - 8000:80
+      - 8001:80
 
 volumes:
   postgres_data:

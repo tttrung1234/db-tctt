@@ -16,12 +16,12 @@ class Target(SQLModel, table=True):
 
 class Group(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    group: str = Field(default=None, primary_key=True)
+    group: str = Field(...)
 
 
 class Category(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    category: str = Field(default=None, primary_key=True)
+    category: str = Field(...)
 
 
 class Status(SQLModel, table=True):
