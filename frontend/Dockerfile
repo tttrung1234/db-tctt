@@ -1,11 +1,9 @@
-FROM node:lts-alpine
+FROM node:latest
 
 WORKDIR /code
 
-RUN npm install --global vite
-COPY ./app/package.json .
+COPY ./package.json .
 
 RUN npm install
 
-
-# COPY ./frontend ./app
+# COPY . .

@@ -4,9 +4,9 @@ services:
   frontend:
     container_name: frontend_container
     build: ./frontend 
-    command: npm run build
+    command: npm run dev
     volumes:
-      - ./frontend/app:/code
+      - ./frontend:/code
     ports:
       - 8000:8000
 
