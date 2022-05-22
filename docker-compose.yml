@@ -7,17 +7,20 @@ services:
     command: npm run dev
     volumes:
       - ./frontend:/code
-    ports:
-      - 8000:8000
+    expose:
+      - 5000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`14.225.255.105`)"
 
   backend:
     container_name: backend_container
     build: ./backend
-    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 5000 --reload'
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --proxy-headers --host 0.0.0.0 --reload'
     volumes:
       - ./backend/app:/code/app
     expose:
-      - 5000
+      - 8000
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
     depends_on:
@@ -29,10 +32,10 @@ services:
     # Dùng để cắt prefix trong request
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fastapi_router.rule=(Host(`14.225.255.105`) && PathPrefix(`/api`))"
+      - "traefik.http.routers.fastapi.rule=(Host(`14.225.255.105`) && PathPrefix(`/api`))"
       - "traefik.http.middlewares.fastapi_middlewares.stripprefix.prefixes=/api"
       - "traefik.http.middlewares.fastapi_middlewares.stripprefix.forceSlash=false"
-      - "traefik.http.routers.fastapi_router.middlewares=fastapi_middlewares"
+      - "traefik.http.routers.fastapi.middlewares=fastapi_middlewares"
 
   db:
     container_name: db_container
@@ -51,6 +54,7 @@ services:
     image: traefik:v2.2
     ports:
       - 80:80
+      - 8000:8000
     volumes:
       - ./traefik.dev.toml:/etc/traefik/traefik.toml
       - /var/run/docker.sock:/var/run/docker.sock:ro

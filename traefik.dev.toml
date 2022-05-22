@@ -2,8 +2,10 @@
 
 # listen on port 80
 [entryPoints]
-  [entryPoints.backend]
+  [entryPoints.frontend]
     address = ":80"
+  [entryPoints.backend]
+    address = ":8000"
 
 # Traefik dashboard over http
 [api]
