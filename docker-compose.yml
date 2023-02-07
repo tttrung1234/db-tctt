@@ -1,72 +1,25 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  frontend:
-    container_name: frontend_container
-    build: ./frontend 
+  dashboard:
+    container_name: dashboard_container
+    build: ./dashboard
+    restart: always
     command: npm run dev
     volumes:
-      - ./frontend:/code
-    expose:
-      - 5000
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`14.225.255.105`)"
+      - ./dashboard/public:/code/public
+      - ./dashboard/src:/code/src
+    ports:
+      - 8000:8000
+    depends_on:
+      - backend
 
   backend:
     container_name: backend_container
     build: ./backend
-    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --proxy-headers --host 0.0.0.0 --reload'
+    restart: always
+    command: python run.py
     volumes:
-      - ./backend/app:/code/app
-    expose:
-      - 8000
-    environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-    depends_on:
-      - db
-    # labels:
-    #   - "traefik.enable=true"
-    #   - "traefik.http.routers.fastapi_router.rule=Host(`14.225.255.105`)"
-
-    # Dùng để cắt prefix trong request
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.fastapi.rule=(Host(`14.225.255.105`) && PathPrefix(`/api`))"
-      - "traefik.http.middlewares.fastapi_middlewares.stripprefix.prefixes=/api"
-      - "traefik.http.middlewares.fastapi_middlewares.stripprefix.forceSlash=false"
-      - "traefik.http.routers.fastapi.middlewares=fastapi_middlewares"
-
-  db:
-    container_name: db_container
-    image: postgres:13-alpine
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    expose:
-      - 5432
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-
-  traefik:
-    container_name: reverse_proxy_container
-    image: traefik:v2.2
+      - ./backend:/code
     ports:
-      - 80:80
-      - 8000:8000
-    volumes:
-      - ./traefik.dev.toml:/etc/traefik/traefik.toml
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-
-  pgadmin:
-    container_name: pgadmin_container
-    image: dpage/pgadmin4:latest
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
-      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
-    ports:
-      - 8001:80
-
-volumes:
-  postgres_data:
+      - 5000:5000
