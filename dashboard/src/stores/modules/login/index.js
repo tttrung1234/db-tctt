@@ -50,7 +50,7 @@ const actions = {
 
   async signIn({ commit }, user) {
     commit("LOGIN_PENDING");
-    let res = await axios.post("/api/signin", user, {
+    let res = await axios.post("/signin", user, {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },

@@ -14,13 +14,13 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     port: 8000,
-    proxy: {
-      "/api": {
-        target: "http://backend_container:5000",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
-      },
-    },
+    // proxy: {
+    //   "/api": {
+    //     target: "http://backend:5000",
+    //     changeOrigin: true,
+    //     rewrite: (path) => path.replace(/^\/api/, ""),
+    //   },
+    // },
   },
   preview: {
     port: 8000,

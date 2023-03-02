@@ -18,8 +18,36 @@ services:
     container_name: backend_container
     build: ./backend
     restart: always
-    command: python run.py
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; python run.py'
     volumes:
       - ./backend:/code
     ports:
       - 5000:5000
+    environment:
+      - DATABASE_URL=postgres://fedor:123456@db:5432/db-tctt
+    depends_on:
+      - db
+
+  db:
+    container_name: db_container
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=fedor
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=db-tctt
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4:latest
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    ports:
+      - 8080:80
+
+volumes:
+  postgres_data:

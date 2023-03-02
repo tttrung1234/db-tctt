@@ -8,11 +8,13 @@ authors = ["fedor <fedor_001@hotmail.com>"]
 python = "^3.8"
 requests = "^2.28.2"
 fastapi = "^0.89.1"
-sqlmodel = "^0.0.8"
 uvicorn = {extras = ["standard"], version = "^0.20.0"}
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 python-multipart = "^0.0.5"
+asyncpg = "^0.27.0"
+tortoise = "^0.1.1"
+aerich = "^0.7.1"
 
 [tool.poetry.dev-dependencies]
 

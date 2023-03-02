@@ -36,10 +36,6 @@ export default {
   },
   created() {
     this.loadUser();
-
-    if (this.access_token) {
-      this.updateInitialState(this.access_token);
-    }
   },
   methods: {
     ...mapActions(["loadUser"]),
@@ -53,18 +49,8 @@ export default {
           console.log(error);
         });
     },
-    updateInitialState(token) {
-      // this.$store.dispatch("getCartItems", token);
-      // this.$store.dispatch("getProductItems", token);
-    },
   },
-  watch: {
-    access_token() {
-      if (this.access_token) {
-        this.updateInitialState(this.access_token);
-      }
-    },
-  },
+  watch: {},
 };
 </script>
 
