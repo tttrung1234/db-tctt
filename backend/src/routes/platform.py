@@ -23,3 +23,12 @@ async def addPlatform(platform: platform_schemas.PlatformIn):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=400)
+    
+
+@router.delete('/{platform_id}', dependencies=[Depends(getCurrentUser)])
+async def deletePlatform(platform_id: int):
+    try:
+        await platform_crud.deletePlatform(platform_id)
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=400)

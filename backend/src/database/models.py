@@ -9,7 +9,7 @@ class User(models.Model):
 
 class Mission(models.Model):
     id = fields.IntField(pk=True)
-    mission_name = fields.CharField(max_length=20, unique=True)
+    mission_name = fields.CharField(max_length=50, unique=True)
     mission_detail = fields.CharField(max_length=200, null=True)
     
     targets: fields.ReverseRelation["Target"]
@@ -25,6 +25,7 @@ class Platform(models.Model):
 
 class Target(models.Model):
     id = fields.IntField(pk=True)
+    profile_id = fields.CharField(max_length=50)
     url = fields.CharField(max_length=200, unique=True)
     platform: fields.ForeignKeyRelation[Platform] = fields.ForeignKeyField("models.Platform", related_name="targets", on_delete=fields.CASCADE)
     mission: fields.ForeignKeyRelation[Mission] = fields.ForeignKeyField("models.Mission", related_name="targets", on_delete=fields.CASCADE)

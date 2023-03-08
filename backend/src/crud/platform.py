@@ -16,3 +16,12 @@ async def getPlatformList() -> List[platform_schemas.PlatformOut]:
         return await platform_schemas.PlatformOut.from_queryset(models.Platform.all())
     except DoesNotExist:
         return []
+    
+
+async def deletePlatform(platform_id: int):
+    try:
+        platfrom_obj = await models.Platform.get(id=platform_id)
+        await platfrom_obj.delete()
+
+    except DoesNotExist as e:
+        raise Exception('Does not exist')

@@ -5,7 +5,14 @@
         <div id="navbarBasicExample" class="navbar-menu">
           <div class="navbar-start">
             <div class="navbar-item">
-              <RouterLink class="navbar-item" to="/abc"> Tổng hợp </RouterLink>
+              <RouterLink class="navbar-item" to="/dashboard">
+                Tổng hợp
+              </RouterLink>
+            </div>
+            <div class="navbar-item">
+              <RouterLink class="navbar-item" to="/summary">
+                Thống kê
+              </RouterLink>
             </div>
           </div>
 

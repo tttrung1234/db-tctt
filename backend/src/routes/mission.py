@@ -23,3 +23,12 @@ async def addMission(mission: mission_schemas.MissionIn):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=400)
+    
+
+@router.delete('/{mission_id}', dependencies=[Depends(getCurrentUser)])
+async def deleteMission(mission_id: int):
+    try:
+        await mission_crud.deleteMission(mission_id)
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=400)

@@ -30,13 +30,13 @@
   </div>
 
   <va-data-table
-    :items="target_list"
+    :items="filtered_targets"
     :wrapper-size="500"
     :item-size="50"
     :columns="columns"
     :filter="search_input"
     @filtered="filtered_count = $event.items.length"
-    @row:dblclick="handleDblClick"
+    @row:dblclick=""
     hoverable
     clickable
     animated
@@ -54,21 +54,13 @@
       </p>
     </template>
     <template #cell(actions)="{ rowData }">
-      <a class="button" @click="handleEditButton(rowData)">
+      <a class="button" @click="">
         <span class="icon is-small has-text-info">
           <i class="fas fa-pen"></i>
         </span>
       </a>
 
-      <a
-        class="button"
-        @click="
-          confirmDeleteTarget({
-            product_code: rowData.code,
-            token: access_token,
-          })
-        "
-      >
+      <a class="button" @click="">
         <span class="icon is-small has-text-danger">
           <i class="fas fa-trash"></i>
         </span>
@@ -76,7 +68,7 @@
     </template>
   </va-data-table>
 
-  <va-modal
+  <!-- <va-modal
     ref="edit_modal"
     stateful
     blur
@@ -105,7 +97,7 @@
         </div>
       </template>
     </template>
-  </va-modal>
+  </va-modal> -->
 
   <va-modal
     ref="add_modal"
@@ -117,7 +109,12 @@
     title="THÊM SẢN PHẨM"
     ok-text="Thêm"
     cancel-text="Hủy"
-    @ok="addTarget({ new_target, token: access_token })"
+    @ok="
+      {
+        addTarget({ new_target, token: access_token });
+        reset();
+      }
+    "
     @cancel=""
   >
     <template #default>
@@ -175,6 +172,7 @@ export default defineComponent({
       "addTarget",
       "getPlatformList",
       "getMissionList",
+      "updateCurrentMission",
     ]),
     // confirmDeleteTarget(payload) {
     //   let text = `Xác nhận xóa sản phẩm ${payload.product_code}?`;
@@ -241,6 +239,17 @@ export default defineComponent({
       return this.mission_list.filter((item) => item.mission_name === name)[0]
         .id;
     },
+
+    reset() {
+      this.new_target = {
+        url: "",
+        profile_id: "",
+        platform_id: "",
+        mission_id: "",
+        active_img: "",
+        disabled_img: "",
+      };
+    },
   },
   computed: {
     ...mapGetters([
@@ -248,11 +257,13 @@ export default defineComponent({
       "access_token",
       "platform_list",
       "mission_list",
+      "filtered_targets",
     ]),
   },
   data() {
     const name_map = {
       url: "Đường dẫn",
+      profile_id: "Tài khoản đăng tải",
       platform_id: "Nền tảng",
       mission_id: "Vụ việc",
       active_img: "Lưu vết 1",
@@ -261,6 +272,7 @@ export default defineComponent({
 
     let new_target = {
       url: "",
+      profile_id: "",
       platform_id: "",
       mission_id: "",
       active_img: "",
@@ -273,11 +285,43 @@ export default defineComponent({
     ];
 
     const columns = [
-      { key: "url", label: "Đường dẫn", thAlign: "center", width: 300 },
-      { key: "platform.platform_name", label: "Nền tảng", width: 100 },
-      { key: "mission.mission_name", label: "Vụ việc", width: 200 },
-      { key: "status", label: "Trạng thái", width: 80 },
-      { key: "actions", label: "Chỉnh sửa", width: 80 },
+      {
+        key: "url",
+        label: "Đường dẫn",
+        width: 300,
+        thAlign: "left",
+      },
+      {
+        key: "profile_id",
+        label: "Tài khoản đăng tải",
+        thAlign: "left",
+      },
+      {
+        key: "platform.platform_name",
+        label: "Nền tảng",
+        thAlign: "left",
+        tdAlign: "left",
+      },
+      {
+        key: "mission.mission_name",
+        label: "Vụ việc",
+        thAlign: "left",
+        tdAlign: "left",
+      },
+      {
+        key: "status",
+        label: "Trạng thái",
+        width: 80,
+        thAlign: "left",
+        tdAlign: "left",
+      },
+      {
+        key: "actions",
+        label: "Chỉnh sửa",
+        width: 80,
+        thAlign: "left",
+        tdAlign: "left",
+      },
     ];
 
     return {
@@ -297,8 +341,10 @@ export default defineComponent({
   },
   watch: {
     current_mission_name(value) {
-      // let cat = this.mission_list.filter((item) => item.label === value)[0];
-      // this.updateCurrentCategory(cat);
+      let mission = this.mission_list.filter(
+        (item) => item.mission_name == value
+      )[0];
+      this.updateCurrentMission(mission.id);
     },
 
     new_target_mission_name(value) {

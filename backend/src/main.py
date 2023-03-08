@@ -1,4 +1,3 @@
-import mailcap
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database.config import register_tortoise
@@ -27,40 +26,3 @@ app.include_router(platform.router)
 app.include_router(mission.router)
 
 register_tortoise(app, generate_schemas=True)
-
-
-
-
-
-
-# @app.post('/missions/new', dependencies=[Depends(getCurrentUser)],
-#                             description="create new mission")
-# def addMission(mission_name: str = Body(..., embed=True),
-#             session: Session = Depends(get_session)):
-#     try:
-#         crud.addMission(session, mission_name)
-#     except Exception as e:
-#         print(e)
-#         raise HTTPException(status_code=403)
-
-
-# @app.delete('/missions/{mission_id}', dependencies=[Depends(getCurrentUser)],
-#                                     description="delete mission")
-# def deleteMission(mission_id: int,
-#                 session: Session = Depends(get_session)):
-#     try:
-#         return crud.deleteMission(session, mission_id)
-#     except Exception as e:
-#         raise HTTPException(status_code=403)
-
-
-# @app.post('/platforms/new', dependencies=[Depends(getCurrentUser)], 
-#                             description="create new platform")
-# def addPlatform(platform_name: str = Body(..., embed=True),
-#             session: Session = Depends(get_session)):
-#     try:
-#         crud.addPlatform(session, platform_name)
-#     except Exception as e:
-#         print(e)
-
-#         raise HTTPException(status_code=403)

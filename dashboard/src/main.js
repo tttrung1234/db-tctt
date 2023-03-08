@@ -6,6 +6,7 @@ import { createVuestic } from "vuestic-ui";
 import "vuestic-ui/css";
 import axios from "axios";
 
+axios.defaults.withCredentials = true;
 axios.interceptors.response.use(undefined, function (error) {
   if (error) {
     if (error.response.status === 401) {

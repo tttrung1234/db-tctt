@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import SignInView from "../views/SignInView.vue";
 import DashboardView from "../views/DashboardView.vue";
 import NotFoundView from "../views/NotFound.vue";
+import SummaryView from "../views/SummaryView.vue";
 
 const routes = [
   {
@@ -18,6 +19,13 @@ const routes = [
     path: "/dashboard",
     name: "Dashboard",
     component: DashboardView,
+    meta: { requiresAuth: true },
+  },
+
+  {
+    path: "/summary",
+    name: "Summary",
+    component: SummaryView,
     meta: { requiresAuth: true },
   },
   //   {
